@@ -13,4 +13,6 @@ Gem::Specification.new do |s|
   s.homepage    =
     'https://github.com/bkon/geminabox-s3-store'
   s.license     = 'MIT'
+
+  s.add_runtime_dependency 'geminabox'
 end
