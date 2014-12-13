@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.add_runtime_dependency 'geminabox'
+  s.add_runtime_dependency 'lock-smith'
 end
