@@ -77,8 +77,8 @@ module Geminabox
 
       def reindex &block
         FileUtils.mkpath @file_store.local_path "gems"
-        @bucket.objects.with_prefix("/gems/").each do |object|
-          path_info = object.key
+        @bucket.objects.with_prefix("gems/").each do |object|
+          path_info = "/" + object.key
           local_file_path = @file_store.local_path path_info
           File.write local_file_path, object.read
         end
@@ -139,11 +139,12 @@ module Geminabox
       end
 
       def gem_object_name(path_info)
-        path_info
+        # Remove loading slash from the path
+        path_info[1..-1]
       end
 
       def metadata_object_name(path_info)
-        path_info.gsub %r{/}, '/metadata/'
+        path_info.gsub %r{/}, 'metadata/'
       end
 
       def merge_gzipped(a, b)
