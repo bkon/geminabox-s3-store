@@ -132,7 +132,7 @@ module Geminabox
         s3_object(file_name).write new_contents
       end
 
-      def pull_file file_name
+      def pull_file file_name, &block
         new_contents = merge_file_with_remote file_name, &block
         file_path = @file_store.local_path file_name
         File.write file_path, new_contents
