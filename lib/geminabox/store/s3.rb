@@ -109,7 +109,7 @@ module Geminabox
       def merge_file_with_remote file_name
         local_index_file = @file_store.local_path file_name
         if File.exists? local_index_file
-          old_contents = File.read(local_index_file)
+          old_contents = File.read(local_index_file, open_args: ["rb"])
         else
           old_contents = ''
         end
