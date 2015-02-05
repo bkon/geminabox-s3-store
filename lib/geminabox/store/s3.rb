@@ -86,7 +86,7 @@ module Geminabox
           path_info = "/" + object.key
           local_file_path = @file_store.local_path path_info
 
-          file_does_not_exist = not File.exists? local_file_path
+          file_does_not_exist = !File.exists?(local_file_path)
           file_has_different_size = object.content_length != File.size(local_file_path)
           if file_does_not_exist || file_has_different_size
             logger.info "Gem: S3 -> local #{local_file_path}"
