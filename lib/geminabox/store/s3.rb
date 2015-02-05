@@ -80,7 +80,12 @@ module Geminabox
         @bucket.objects.with_prefix("gems/").each do |object|
           path_info = "/" + object.key
           local_file_path = @file_store.local_path path_info
-          File.write local_file_path, object.read
+
+          file_does_not_exist = not File.exists? local_file_path
+          file_has_different_size = object.content_length != File.size(local_file_path)
+          if file_does_not_exist || file_has_different_size
+              File.write local_file_path, object.read
+          end
         end
 
         @file_store.reindex(&block)
