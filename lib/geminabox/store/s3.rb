@@ -1,6 +1,8 @@
 module Geminabox
   module Store
     class S3
+      attr_reader :logger
+
       SPLICEABLE_GZIPPED_FILES = %w[
         specs.4.8.gz
         latest_specs.4.8.gz
@@ -14,16 +16,19 @@ module Geminabox
         prerelease_specs.4.8
       ]
 
-      def initialize(bucket: nil, lock_manager: lock_manager, file_store: Geminabox::GemStore)
+      def initialize(bucket: nil, lock_manager: lock_manager, file_store: Geminabox::GemStore, logger: Logger.new(STDOUT))
         @bucket = bucket
         @file_store = file_store
         @lock_manager = lock_manager
+        @logger = logger
       end
 
       def create(gem, overwrite = false)
         @file_store.create gem, overwrite
 
         object_name = gem_object_name("/gems/" + gem.name)
+
+        logger.info "Gem: local -> S3 #{object_name}"
 
         @bucket
           .objects[object_name]
@@ -84,7 +89,8 @@ module Geminabox
           file_does_not_exist = not File.exists? local_file_path
           file_has_different_size = object.content_length != File.size(local_file_path)
           if file_does_not_exist || file_has_different_size
-              File.write local_file_path, object.read
+            logger.info "Gem: S3 -> local #{local_file_path}"
+            File.write local_file_path, object.read
           end
         end
 
@@ -133,11 +139,15 @@ module Geminabox
       end
 
       def push_file file_name, &block
+        logger.info "Push: local -> S3 #{file_name}"
+
         new_contents = merge_file_with_remote file_name, &block
         s3_object(file_name).write new_contents
       end
 
       def pull_file file_name, &block
+        logger.info "Pull: S3 -> local #{file_name}"
+
         new_contents = merge_file_with_remote file_name, &block
         file_path = @file_store.local_path file_name
         File.write file_path, new_contents
