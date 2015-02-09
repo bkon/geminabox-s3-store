@@ -89,7 +89,7 @@ module Geminabox
           file_does_not_exist = !File.exists?(local_file_path)
 
           # File.size raises an exception if file does not exist
-          file_size = file_does_not_exists ? 0 : File.size(local_file_path)
+          file_size = file_does_not_exist ? 0 : File.size(local_file_path)
           file_has_different_size = object.content_length != file_size
 
           if file_does_not_exist || file_has_different_size
